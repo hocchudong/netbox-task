@@ -1,0 +1,44 @@
+{% extends 'generic/object.html' %}
+{% load buttons %}
+{% load static %}
+{% load helpers %}
+{% load plugins %}
+
+{% block content %}
+<div class="row my-3">
+	<div class="col col-md-6">
+        <div class="card">
+            <h5 class="card-header">
+                AWX Template
+            </h5>
+            <table class="table table-hover attr-table">
+                <tr>
+                    <th scope="row">Template Name</th>
+                    <td>{{ object.template_name }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">AWX Server</th>
+                    <td><a href="{% url 'plugins:netbox_task:awxserver' object.awx_server.id %}">{{ object.awx_server }}</a></td>
+                </tr>
+                <tr>
+                    <th scope="row">Template ID</th>
+                    <td>{{ object.template_id }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Describe</th>
+                    <td>{{ object.describe }}</td>
+                </tr>
+            </table>
+        </div>
+        {% include 'inc/panels/custom_fields.html' %}
+        {% include 'inc/panels/tags.html' %}
+        {% include 'inc/panels/comments.html' %}
+        {% plugin_left_page object %}
+    </div>
+</div>
+<div class="row">
+    <div class="col col-md-12">
+        {% plugin_full_width_page object %}
+    </div>
+</div>
+{% endblock %}

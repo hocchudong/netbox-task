@@ -1,0 +1,7 @@
+Metadata-Version: 2.1
+Name: netbox-task
+Version: 1.0.2
+Summary: Run AWX Task from Netbox
+Author: HuyTM
+License: Apache 2.0
+License-File: LICENSE

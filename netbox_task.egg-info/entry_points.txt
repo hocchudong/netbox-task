@@ -1,0 +1,2 @@
+[netbox_task]
+netbox_task = netbox_task:Plugin

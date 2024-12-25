@@ -1,0 +1,92 @@
+{% load virtualmachine_buttons %}
+
+<div class="dropdown">
+    <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true"
+        aria-expanded="false">
+        Task
+    </button>
+    <ul class="dropdown-menu">
+        {% get_virtualmachine_buttons_object as buttons %}
+        {% for obj in buttons %}
+        <li>
+            <button type="button" data-bs-toggle="modal" title="Configure Table" data-bs-target="#Button_action" class="dropdown-item hcd-button" 
+                data-button_name="{{ obj.button_name }}" 
+                data-button_id="{{ obj.id }}"
+                data-vm_name="{{ object.name }}"
+                {% if object.primary_ip4.address.ip %}
+                data-vm_ip="{{ object.primary_ip4.address.ip }}"
+                {% else %}
+                data-vm_ip="None"
+                {% endif %}
+                data-vm_id="{{ object.id }}"
+            >
+                {{ obj.button_name }}
+            </button>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+
+
+<div class="modal fade" tabindex="-1" id="Button_action">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="hcd-modal-title">Table Configuration</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form action="{% url 'plugins:netbox_task:virtualmachinebuttons_runjob' %}" method="post" data-config-root="tables.CustomLinkTable">
+          <div class="modal-body row">
+            {% csrf_token %}
+            <div class="text-center">
+                <textarea class="form-control" id="modal-json-data" rows="6" disabled></textarea>
+                <input type="hidden" id="modal-vmid-data" name="vm_id">
+                <input type="hidden" id="modal-vmname-data" name="vm_name">
+                <input type="hidden" id="modal-ip-data" name="vm_ip">
+                <input type="hidden" id="modal-buttonid-data" name="button_id">
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary" id="run_job" value="Run">Run Job</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+<script>
+
+function updateModalContent(button_action, vm_id, vm_name, vm_ip, button_id) {
+    var jsondata = `# Extra variables
+{ 
+    "vm_id": "${vm_id}",
+    "vm_name": "${vm_name}",
+    "vm_ip": "${vm_ip}"
+}
+    `
+    document.getElementById('hcd-modal-title').innerHTML = button_action
+    document.getElementById('modal-json-data').value = jsondata
+    document.getElementById('modal-vmid-data').value = vm_id
+    document.getElementById('modal-vmname-data').value = vm_name
+    document.getElementById('modal-ip-data').value = vm_ip
+    document.getElementById('modal-buttonid-data').value = button_id
+}
+
+document.addEventListener('click', function(event) {
+    if (event.target.hasAttribute('data-bs-target') && event.target.classList.contains('hcd-button')) {
+        var button_action = event.target.getAttribute('data-button_name');
+        var vm_id = event.target.getAttribute('data-vm_id');
+        var vm_name = event.target.getAttribute('data-vm_name');
+        var vm_ip = event.target.getAttribute('data-vm_ip');
+        var button_id = event.target.getAttribute('data-button_id');
+        
+        if (vm_ip == "None") {
+            vm_ip = ""
+        }
+
+        updateModalContent(button_action, vm_id, vm_name, vm_ip, button_id)
+    }
+});
+
+</script>
